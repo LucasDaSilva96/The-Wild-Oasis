@@ -1,4 +1,15 @@
 import styled from "styled-components";
+import { formatCurrency } from "../../utils/helpers";
+import React, { useState } from "react";
+import CreateCabinForm from "./CreateCabinForm";
+import useDeleteCabin from "./UseDeleteCabin";
+import {
+  HiMiniMinusSmall,
+  HiPencil,
+  HiSquare2Stack,
+  HiTrash,
+} from "react-icons/hi2";
+import useCreateCabin from "./useCreateCabin";
 
 const TableRow = styled.div`
   display: grid;
@@ -38,3 +49,59 @@ const Discount = styled.div`
   font-weight: 500;
   color: var(--color-green-700);
 `;
+
+function CabinRow({ cabin }) {
+  const [showForm, setShowForm] = useState(false);
+  const { isDeleting, deleteCabin } = useDeleteCabin();
+
+  const { isCreating, createCabin } = useCreateCabin();
+
+  const {
+    name,
+    maxCapacity,
+    regularPrice,
+    discount,
+    description,
+    image,
+    id: cabinID,
+  } = cabin;
+
+  function handleDuplicate() {
+    createCabin({
+      name: `Copy of ${name}`,
+      maxCapacity,
+      regularPrice,
+      discount,
+      image,
+      description,
+    });
+  }
+
+  return (
+    <React.Fragment>
+      <TableRow role="row">
+        <Img src={image} alt="Cabin"></Img>
+        <Cabin>{name}</Cabin>
+        <div>Fits up to {maxCapacity}</div>
+        <Price>{formatCurrency(regularPrice)}</Price>
+        <Discount>
+          {discount > 0 ? formatCurrency(discount) : <HiMiniMinusSmall />}
+        </Discount>
+        <div>
+          <button onClick={() => handleDuplicate()}>
+            <HiSquare2Stack />
+          </button>
+          <button onClick={() => setShowForm((value) => !value)}>
+            <HiPencil />
+          </button>
+          <button disabled={isDeleting} onClick={() => deleteCabin(cabinID)}>
+            <HiTrash />
+          </button>
+        </div>
+      </TableRow>
+      {showForm && <CreateCabinForm cabinToEdit={cabin} />}
+    </React.Fragment>
+  );
+}
+
+export default CabinRow;

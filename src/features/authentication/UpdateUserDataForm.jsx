@@ -39,12 +39,11 @@ function UpdateUserDataForm() {
     );
   }
 
-  if (isUpdating) return <Spinner />;
-
   function handleCancel() {
     setFullName(currentFullName);
     setAvatar(null);
   }
+  if (isUpdating) return <Spinner />;
 
   return (
     <Form onSubmit={handleSubmit}>
